@@ -61,7 +61,7 @@ Vue.filter('formatDate', function(value) {
 // Defining the url path of the backend apis
 Vue.prototype.$backendApi = "/backend/easyfranchise/rest/efservice/v1";
 // Change variable to localhost if you want to test the application locally
-// Vue.prototype.$backendApi = "http://localhost:8080/easyfranchise/rest/efservice/v1";
+ //Vue.prototype.$backendApi = "http://localhost:8080/easyfranchise/rest/efservice/v1";
 
 // Rendering the main vue component and adding the router to it.
 new Vue({

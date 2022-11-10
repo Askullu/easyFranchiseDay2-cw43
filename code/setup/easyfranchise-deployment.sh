@@ -392,7 +392,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     log "================================================================================================="
     echo ""
     
-    VERSION=$(uuidgen)
+    VERSION=1
 
     case $COMPONENT_NUMBER in
       1|9)	

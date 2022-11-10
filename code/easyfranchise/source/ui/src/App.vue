@@ -55,6 +55,23 @@ export default {
     ModalIntro
   },
   methods: {
+   // Calling Metering API to register the user
+    logUser(){
+      const apiUrl = this.$backendApi + "/meter-user-login";
+      fetch(
+          apiUrl,
+          {
+            method: "PUT"  
+          }
+        )
+        .then(response => {
+          console.log("[DEBUG] Login user in EF Service: " + response);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+
     // Checking if intro modal should be display or not based on maintained information
     async checkandFillCompanyDetails(){
       let apiUrl = this.$backendApi + "/config/franchisor";
@@ -201,6 +218,7 @@ export default {
     this.loadAllFranchises();
     this.loadAllCoordinators();
     this.checkandFillCompanyDetails();
+    this.logUser();
   }
 }
 </script>

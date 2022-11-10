@@ -13,6 +13,9 @@ ar.beforeRequestHandler.use('/backend', function (req, res, next) {
         const decodedToken = jwt_decode(token);
         const tenant = decodedToken && decodedToken.zid;
         req.headers['x-tenant-id'] = tenant;
+         //get the user from decodedToken and create a according header: 
+         const userId = decodedToken.user_name;
+         req.headers['x-user-id'] = userId;
         next();
     }
 });

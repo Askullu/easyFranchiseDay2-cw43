@@ -36,6 +36,11 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import java.io.StringReader;
+   import java.util.Base64;
+   import jakarta.json.Json;
+   import jakarta.json.JsonObject;
+
 
 /**
  * Rest service for EasyFranchise operations. For tenant specific calls, the
@@ -607,6 +612,73 @@ public class EFService extends BaseRS {
         }
     }
 
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("meter-user-login")
+   public Response meterUserLogin(@Context HttpHeaders headers, @Context ContainerRequestContext resContext) {
+       logger.info(Util.createLogDetails(resContext, headers));
+       try {
+           var tenantId = Util.validateTenantAccess(headers);
+
+           //the user in plain 
+           var user = getUser(headers);
+
+           ConnectionParameter param = new ConnectionParameter(RequestMethod.PUT,
+                   Util.getMeteringOperationServiceUrl() + "user/login").setAcceptJsonHeader();
+           param.payload = "{\"tenantid\": \"" + tenantId + "\", \"user\": \"" + user + "\"}";
+           Connection.call(param);
+           if (param.status != HttpStatus.SC_OK) {
+               throw new WebApplicationException("Error while calling metering day2 service.  "+ param.getUrl() + " status:" + param.status,  param.status);
+           }
+           return createOkResponse(param.content);
+       } catch (WebApplicationException e) {
+           logger.error(e.getMessage(), e);
+           return createResponse(e);
+       } catch (Exception e) {
+           logger.error(UNEXPECTED_ERROR + e.getMessage(), e);
+           return createErrorResponse();
+       }
+   }   
+    /*
+     * Get the user name from the request context. Return a default name for the local development
+     * @param httpHeaders 
+     */
+    private static String getUser(HttpHeaders httpHeaders) throws Exception {
+        if (Util.isLocalDev()) { // in the local run, we do not have a logged in user. We are just using a default string
+            return "default-local-user-id";  
+        }
+
+         List<String> authorisationHeaders = httpHeaders.getRequestHeader("Authorization");
+         if (authorisationHeaders.size()<1)
+             throw new Exception("missing Header for key \"Authorization\".");
+
+         // The user in plainext is taken. Consider encrypting if a higher privacy policy is needed.
+         var user = getUserFromBearerToken(authorisationHeaders.get(0));
+         return user;
+    }
+   /**
+    * Get the User from the bearerToken
+    * @param bearerToken
+    * @return
+    * @throws Exception
+    */
+   private static String getUserFromBearerToken(String bearerToken) throws Exception {
+       if (bearerToken.indexOf("Bearer") != 0)
+           throw new Exception("The Bearer token of the header dose not not start with `Bearer `");
+       try {
+           String token = bearerToken.substring(7);
+           String[] chunks = token.split("\\.");
+           Base64.Decoder decoder = Base64.getUrlDecoder();
+
+           // String header = new String(decoder.decode(chunks[0]));
+           String payload = new String(decoder.decode(chunks[1]));
+
+           JsonObject jsonObject = Json.createReader(new StringReader(payload)).readObject();
+           return jsonObject.getString("user_name");
+       } catch (Exception e) {
+           throw new Exception("could not read user_name from Bearer token", e);
+       }
+   } 
     /**
      * OPTIONS calls for local development.
      * For local develoment UI host/port and backend host/port are not the same. In that case a browser usually issues 
@@ -667,5 +739,11 @@ public class EFService extends BaseRS {
     public Response setOptions09() {
         return createOkResponseSimpleText("ok");
     }
+
+    @OPTIONS
+   @Path("meter-user-login")
+   public Response setOptions10() {
+       return createOkResponseSimpleText("ok");
+   }
     
 }

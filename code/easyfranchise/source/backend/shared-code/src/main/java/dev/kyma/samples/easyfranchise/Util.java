@@ -18,6 +18,8 @@ import jakarta.ws.rs.core.HttpHeaders;
 
 public class Util {
 
+    private static String METERING_OPERATIONS_SERVICE= "day2.service";
+
     private static final String X_TENANT_ID = "x-tenant-id";
 
     private static final Logger logger = LoggerFactory.getLogger(Util.class);
@@ -120,6 +122,11 @@ public class Util {
         Properties p = readProperties(BACKEND_CONFIG_PATH);
         return p.getProperty(DB_ADMIN_SERVICE);
     }
+
+    public static String getMeteringOperationServiceUrl() {
+        Properties p = readProperties(BACKEND_CONFIG_PATH);
+        return p.getProperty(METERING_OPERATIONS_SERVICE);
+    }  
 
     public static String getDBSqlEndpoint() {
         Properties p = readProperties(DB_SECRET_PATH);

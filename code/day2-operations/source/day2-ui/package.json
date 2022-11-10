@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start": "NODE_OPTIONS=--openssl-legacy-provider npm-run-all ...",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --dest resources",
     "lint": "vue-cli-service lint"
+   
   },
   "dependencies": {
     "@popperjs/core": "^2.9.2",
@@ -27,6 +29,7 @@
   "engines": {
     "node": "14.x.x"
   },
+
   "eslintConfig": {
     "root": true,
     "env": {
