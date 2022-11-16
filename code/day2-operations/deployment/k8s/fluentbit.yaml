@@ -182,7 +182,7 @@ spec:
         env:
         - name: FLUENT_ELASTICSEARCH_HOST  
          # please adapt the url to "elasticsearch.<your Kyma cluster domain>",e.g. "elasticsearch.c-32e79b1.stage.kyma.ondemand.com". The Kyma cluster should be where your ELK stack is deployed.
-          value: "elasticsearch.<cluster-domain>" 
+          value: "elasticsearch.c-937ad69.kyma.ondemand.com" 
         - name: FLUENT_ELASTICSEARCH_PORT
           value: "443" # Adapt the port if you run on an external system e.g. 443
         - name: ELASTIC_USER
